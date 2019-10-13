@@ -39,11 +39,15 @@ namespace QuickInfoUtils
             }
 
             ImageElement icon = GetIcon((IMethodSymbol)symbolToDisplay);
-            _containerElementList.Add(new ContainerElement(ContainerElementStyle.Wrapped, icon, new ClassifiedTextElement(runs.ToArray())));
+            _containerElementList.Add(new ContainerElement(ContainerElementStyle.VerticalPadding, icon, new ClassifiedTextElement(runs.ToArray())));
         }
 
         private static ImageElement GetIcon(IMethodSymbol symbolToDisplay)
         {
+            if (symbolToDisplay.IsExtensionMethod)
+            {
+                return new ImageElement(new ImageId(KnownMonikers.ExtensionMethod.Guid, KnownMonikers.ExtensionMethod.Id));
+            }
             switch (symbolToDisplay.DeclaredAccessibility)
             {
                 case Accessibility.NotApplicable:
@@ -61,14 +65,10 @@ namespace QuickInfoUtils
                 case Accessibility.Public:
                     return new ImageElement(new ImageId(KnownMonikers.MethodPublic.Guid, KnownMonikers.MethodPublic.Id));
             }
-            if (symbolToDisplay.IsExtensionMethod)
-            {
-                return new ImageElement(new ImageId(KnownMonikers.ExtensionMethod.Guid, KnownMonikers.ExtensionMethod.Id));
-            }
             return new ImageElement(new ImageId(KnownMonikers.Method.Guid, KnownMonikers.Method.Id));
         }
 
-        public  void AddContainer(string buttonText,RoutedEventHandler buttonClick)
+        public void AddContainer(string buttonText,RoutedEventHandler buttonClick)
         {
             Button buttonelement = CreateButtonAsync(buttonText, buttonClick).Result;
             _containerElementList.Add(new ContainerElement(ContainerElementStyle.Wrapped, buttonelement));
