@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using System.Windows;
 using System.Diagnostics;
-
+using Microsoft.CodeAnalysis.Text;
 using OptionsHelper;
 using QuickInfoUtils;
 
@@ -21,6 +21,7 @@ namespace QuickInfoExtender
 
         public async Task<QuickInfoItem> GetQuickInfoItemAsync(IAsyncQuickInfoSession session, CancellationToken cancellationToken)
         {
+            if (!_textBuffer.ContentType.DisplayName.Contains("CSharp")) return await System.Threading.Tasks.Task.FromResult<QuickInfoItem>(null);
             _quickInfoUtils = new OverloadGenerator(_textBuffer, session);
             var overloads = _quickInfoUtils.GetAllOverLoadsForMousePosition();
             ContainerElementBuilder uIHelper = new ContainerElementBuilder();

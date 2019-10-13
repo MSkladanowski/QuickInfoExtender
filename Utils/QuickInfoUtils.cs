@@ -60,6 +60,7 @@ namespace QuickInfoUtils
                 return methodNode;
             }
         }
+
         public ISymbol GetSymbol()
         {
             return _semanticModel?.GetSymbolInfo(GetSyntaxNode()).Symbol;

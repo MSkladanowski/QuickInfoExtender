@@ -10,6 +10,9 @@ using Microsoft.CodeAnalysis.Classification;
 using Microsoft.VisualStudio.Imaging;
 using Microsoft.VisualStudio.Core.Imaging;
 using System;
+using System.Linq;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Threading;
 
 namespace QuickInfoUtils
@@ -30,12 +33,39 @@ namespace QuickInfoUtils
         public void AddContainer(ISymbol symbolToDisplay)
         {
             List<ClassifiedTextRun> runs = new List<ClassifiedTextRun>();
-
-            foreach (var part in symbolToDisplay.ToDisplayParts())
+            foreach (var part in symbolToDisplay.ToDisplayParts(SymbolDisplayFormat.MinimallyQualifiedFormat))
             {
                 runs.Add(new ClassifiedTextRun(part.Kind.ToClassificationTypeName(), part.ToString()));
             }
-            _containerElementList.Add(new ContainerElement(ContainerElementStyle.Wrapped, new ImageElement(new ImageId(KnownMonikers.MethodPrivate.Guid, KnownMonikers.MethodPrivate.Id)), new ClassifiedTextElement(runs.ToArray())));
+
+            ImageElement icon = GetIcon((IMethodSymbol)symbolToDisplay);
+            _containerElementList.Add(new ContainerElement(ContainerElementStyle.Wrapped, icon, new ClassifiedTextElement(runs.ToArray())));
+        }
+
+        private static ImageElement GetIcon(IMethodSymbol symbolToDisplay)
+        {
+            switch (symbolToDisplay.DeclaredAccessibility)
+            {
+                case Accessibility.NotApplicable:
+                    return new ImageElement(new ImageId(KnownMonikers.MethodPublic.Guid, KnownMonikers.MethodPublic.Id));
+                case Accessibility.Private:
+                    return new ImageElement(new ImageId(KnownMonikers.MethodPrivate.Guid, KnownMonikers.MethodPrivate.Id));
+                case Accessibility.ProtectedAndInternal:
+                    return new ImageElement(new ImageId(KnownMonikers.MethodProtected.Guid, KnownMonikers.MethodProtected.Id));
+                case Accessibility.Protected:
+                    return new ImageElement(new ImageId(KnownMonikers.MethodProtected.Guid, KnownMonikers.MethodProtected.Id));
+                case Accessibility.Internal:
+                    return new ImageElement(new ImageId(KnownMonikers.MethodInternal.Guid, KnownMonikers.MethodInternal.Id));
+                case Accessibility.ProtectedOrInternal:
+                    return new ImageElement(new ImageId(KnownMonikers.MethodInternal.Guid, KnownMonikers.MethodInternal.Id));
+                case Accessibility.Public:
+                    return new ImageElement(new ImageId(KnownMonikers.MethodPublic.Guid, KnownMonikers.MethodPublic.Id));
+            }
+            if (symbolToDisplay.IsExtensionMethod)
+            {
+                return new ImageElement(new ImageId(KnownMonikers.ExtensionMethod.Guid, KnownMonikers.ExtensionMethod.Id));
+            }
+            return new ImageElement(new ImageId(KnownMonikers.Method.Guid, KnownMonikers.Method.Id));
         }
 
         public  void AddContainer(string buttonText,RoutedEventHandler buttonClick)
