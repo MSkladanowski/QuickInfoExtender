@@ -27,7 +27,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AsyncQuickExtender</RootNamespace>
     <AssemblyName>QuickInfoExtender</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <GeneratePkgDefFile>true</GeneratePkgDefFile>
     <IncludeAssemblyInVSIXContainer>true</IncludeAssemblyInVSIXContainer>
     <IncludeDebugSymbolsInVSIXContainer>true</IncludeDebugSymbolsInVSIXContainer>
@@ -58,12 +58,6 @@
   <ItemGroup>
     <Compile Include="LineAsyncQuickInfoProvider.cs" />
     <Compile Include="LineAsyncQuickInfoSource.cs" />
-    <Compile Include="Options\BaseOptionModel.cs" />
-    <Compile Include="Options\BaseOptionPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Options\DialogPageProvider.cs" />
-    <Compile Include="Options\GeneralOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProjectPackage.cs" />
   </ItemGroup>
@@ -660,7 +654,7 @@
     <Analyzer Include="..\packages\Microsoft.VisualStudio.Threading.Analyzers.16.3.13\analyzers\cs\Microsoft.VisualStudio.Threading.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\QuickInfo.Utils.csproj">
+    <ProjectReference Include="..\Utils\QuickInfo.Utils.csproj">
       <Project>{a519165e-eeaf-4c59-ac9e-ba6fab298d3b}</Project>
       <Name>QuickInfo.Utils</Name>
     </ProjectReference>

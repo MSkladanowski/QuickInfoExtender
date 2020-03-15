@@ -12,6 +12,7 @@ namespace QuickInfoExtender
     {
         public IAsyncQuickInfoSource TryCreateQuickInfoSource(ITextBuffer textBuffer)
         {
+            
             return textBuffer.Properties.GetOrCreateSingletonProperty(() => new LineAsyncQuickInfoSource(textBuffer));
         }
     }

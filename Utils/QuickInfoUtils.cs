@@ -36,18 +36,19 @@ namespace QuickInfoUtils
             _document = _snapShotPoint.Snapshot.GetOpenDocumentInCurrentContextWithChanges();
         }
 
-        private void GetSemanticModel()
+        private async Task GetSemanticModel()
         {
-            _semanticModel = _document?.GetSemanticModelAsync().Result;
+            _semanticModel = await _document?.GetSemanticModelAsync();
             if (_semanticModel?.Language != "C#")
             {
                 _semanticModel = null;
             }
         }
 
-        private SyntaxNode GetSyntaxNode()
+        private async Task<SyntaxNode> GetSyntaxNode()
         {
-            SyntaxNode methodNode = _document?.GetSyntaxRootAsync().Result.FindToken(_snapShotPoint).Parent;
+            SyntaxNode syntaxRoot = await _document?.GetSyntaxRootAsync();
+            SyntaxNode methodNode = syntaxRoot.FindToken(_snapShotPoint).Parent;
 
             var constructorNode = methodNode?.Ancestors().FirstOrDefault();
 
@@ -55,23 +56,21 @@ namespace QuickInfoUtils
             {
                 return constructorNode;
             }
-            else
-            {
-                return methodNode;
-            }
-        }
-        public ISymbol GetSymbol()
-        {
-            return _semanticModel?.GetSymbolInfo(GetSyntaxNode()).Symbol;
+            return methodNode;
         }
 
-        public List<ISymbol> GetAllOverLoadsForMousePosition()
+        public async Task<ISymbol> GetSymbol()
+        {
+            return _semanticModel?.GetSymbolInfo(await GetSyntaxNode()).Symbol;
+        }
+
+        public async Task<List<ISymbol>> GetAllOverLoadsForMousePositionAsync()
         {
             GetSnapshotPoint();
             GetDocument();
-            GetSemanticModel();
-            var syntaxNode = GetSyntaxNode();
-            ISymbol symbol = GetSymbol();
+            await GetSemanticModel().ConfigureAwait(false);
+            var syntaxNode = await GetSyntaxNode().ConfigureAwait(false);
+            ISymbol symbol = await GetSymbol().ConfigureAwait(false);
             List<ISymbol> overloadMembers = GetOverloads(syntaxNode);
 
             if (symbol != null)
@@ -88,10 +87,7 @@ namespace QuickInfoUtils
             {
                 return _semanticModel.GetMemberGroup(syntaxNode).ToList();
             }
-            else
-            {
-                return new List<ISymbol>();
-            }
+            return new List<ISymbol>();
         }
     }
 }
